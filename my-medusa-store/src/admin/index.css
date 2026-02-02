@@ -1,0 +1,70 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+    :root {
+        /* Main Backgrounds - Dark Theme */
+        --bg-base: #181311 !important;
+        --bg-subtle: #231e1a !important;
+        --bg-subtle-pressed: #2a2420 !important;
+        --bg-subtle-hover: #2a2420 !important;
+        --bg-field: #231e1a !important;
+        --bg-field-hover: #2a2420 !important;
+
+        /* Sidebar Specifics */
+        --bg-sidebar: #181311 !important;
+
+        /* Text Colors */
+        --fg-base: #ffffff !important;
+        --fg-subtle: #bba79b !important;
+        --fg-muted: #8c7b72 !important;
+        --fg-interactive: #f05b05 !important;
+        --fg-interactive-hover: #ff7a2e !important;
+
+        /* Borders */
+        --border-base: #3a2e27 !important;
+        --border-strong: #4a3b32 !important;
+        --border-interactive: #f05b05 !important;
+
+        /* Buttons */
+        --button-inverted-bg: #f05b05 !important;
+        --button-inverted-bg-hover: #d14d04 !important;
+        --button-inverted-fg: #ffffff !important;
+
+        --button-neutral-bg: #231e1a !important;
+        --button-neutral-bg-hover: #3a2e27 !important;
+        --button-neutral-fg: #ffffff !important;
+
+        /* Inputs */
+        --ui-bg-field: #231e1a !important;
+        --ui-border-base: #3a2e27 !important;
+        --ui-fg-base: #ffffff !important;
+    }
+
+    /* Force dark background on the main html/body */
+    html,
+    body {
+        background-color: #181311 !important;
+        color: #ffffff !important;
+        font-family: 'Work Sans', sans-serif !important;
+    }
+
+    /* Specific Medusa UI Component Overrides */
+    .ui-table-row:hover {
+        background-color: #231e1a !important;
+    }
+
+    /* Sidebar Links */
+    a[href^="/settings"],
+    a[href^="/orders"],
+    a[href^="/products"] {
+        color: #bba79b;
+    }
+
+    /* Active Sidebar Item (approximation) */
+    .bg-ui-bg-base-pressed {
+        background-color: #f05b05 !important;
+        color: white !important;
+    }
+}

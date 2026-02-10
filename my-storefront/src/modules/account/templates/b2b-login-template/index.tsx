@@ -1,10 +1,15 @@
 "use client"
 
-import { useState } from "react"
+import { useActionState, useState } from "react"
 import LocalizedClientLink from "@modules/common/components/localized-client-link"
+import { login, signupB2B } from "@lib/data/customer"
+import { SubmitButton } from "@modules/checkout/components/submit-button"
+import ErrorMessage from "@modules/checkout/components/error-message"
 
 const B2BLoginTemplate = () => {
     const [activeTab, setActiveTab] = useState<"login" | "register">("login")
+    const [loginMessage, loginAction] = useActionState(login, null)
+    const [registerMessage, registerAction] = useActionState(signupB2B, null)
 
     return (
         <div className="min-h-screen flex flex-col bg-background-cream">
@@ -115,8 +120,8 @@ const B2BLoginTemplate = () => {
                                 <button
                                     onClick={() => setActiveTab("login")}
                                     className={`flex-1 py-3 px-4 rounded-md text-sm font-semibold transition-all ${activeTab === "login"
-                                            ? "bg-white text-primary shadow-sm"
-                                            : "text-text-muted"
+                                        ? "bg-white text-primary shadow-sm"
+                                        : "text-text-muted"
                                         }`}
                                 >
                                     Giriş Yap
@@ -124,8 +129,8 @@ const B2BLoginTemplate = () => {
                                 <button
                                     onClick={() => setActiveTab("register")}
                                     className={`flex-1 py-3 px-4 rounded-md text-sm font-semibold transition-all ${activeTab === "register"
-                                            ? "bg-white text-primary shadow-sm"
-                                            : "text-text-muted"
+                                        ? "bg-white text-primary shadow-sm"
+                                        : "text-text-muted"
                                         }`}
                                 >
                                     Kayıt Ol
@@ -145,7 +150,7 @@ const B2BLoginTemplate = () => {
                                     </p>
                                 </div>
 
-                                <form className="flex flex-col gap-5 mt-2">
+                                <form className="flex flex-col gap-5 mt-2" action={loginAction}>
                                     <div className="flex flex-col gap-1.5">
                                         <label
                                             className="text-sm font-semibold text-text-main"
@@ -160,8 +165,10 @@ const B2BLoginTemplate = () => {
                                             <input
                                                 className="w-full pl-10 pr-4 py-3 rounded-lg border border-input-border bg-white text-text-main focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary transition-shadow placeholder:text-gray-400/70"
                                                 id="email"
+                                                name="email"
                                                 placeholder="sef@restoran.com"
                                                 type="email"
+                                                required
                                             />
                                         </div>
                                     </div>
@@ -188,8 +195,10 @@ const B2BLoginTemplate = () => {
                                             <input
                                                 className="w-full pl-10 pr-4 py-3 rounded-lg border border-input-border bg-white text-text-main focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary transition-shadow placeholder:text-gray-400/70"
                                                 id="password"
+                                                name="password"
                                                 placeholder="••••••••"
                                                 type="password"
+                                                required
                                             />
                                         </div>
                                     </div>
@@ -208,12 +217,13 @@ const B2BLoginTemplate = () => {
                                         </label>
                                     </div>
 
-                                    <button
+                                    <ErrorMessage error={loginMessage} data-testid="login-error-message" />
+
+                                    <SubmitButton
                                         className="mt-4 flex w-full items-center justify-center rounded-lg bg-primary py-3 px-4 text-base font-bold text-white shadow-lg shadow-primary/20 transition-all hover:bg-primary-dark hover:shadow-primary/40 active:scale-[0.98]"
-                                        type="button"
                                     >
                                         Giriş Yap
-                                    </button>
+                                    </SubmitButton>
                                 </form>
 
                                 <div className="mt-4 p-4 rounded-lg bg-background-cream border border-input-border/50 flex items-start gap-3">
@@ -241,7 +251,7 @@ const B2BLoginTemplate = () => {
                                     </p>
                                 </div>
 
-                                <form className="flex flex-col gap-4 mt-2">
+                                <form className="flex flex-col gap-4 mt-2" action={registerAction}>
                                     <div className="grid grid-cols-2 gap-4">
                                         <div className="flex flex-col gap-1.5">
                                             <label
@@ -253,7 +263,9 @@ const B2BLoginTemplate = () => {
                                             <input
                                                 className="w-full px-4 py-3 rounded-lg border border-input-border bg-white text-text-main focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary placeholder:text-gray-400/70"
                                                 id="first_name"
+                                                name="first_name"
                                                 type="text"
+                                                required
                                             />
                                         </div>
                                         <div className="flex flex-col gap-1.5">
@@ -266,7 +278,9 @@ const B2BLoginTemplate = () => {
                                             <input
                                                 className="w-full px-4 py-3 rounded-lg border border-input-border bg-white text-text-main focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary placeholder:text-gray-400/70"
                                                 id="last_name"
+                                                name="last_name"
                                                 type="text"
+                                                required
                                             />
                                         </div>
                                     </div>
@@ -285,8 +299,10 @@ const B2BLoginTemplate = () => {
                                             <input
                                                 className="w-full pl-10 pr-4 py-3 rounded-lg border border-input-border bg-white text-text-main focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary placeholder:text-gray-400/70"
                                                 id="company_name"
+                                                name="company_name"
                                                 placeholder="Efsane Baharat Ltd. Şti."
                                                 type="text"
+                                                required
                                             />
                                         </div>
                                     </div>
@@ -305,7 +321,9 @@ const B2BLoginTemplate = () => {
                                             <select
                                                 className="w-full pl-10 pr-10 py-3 rounded-lg border border-input-border bg-white text-text-main focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary appearance-none cursor-pointer"
                                                 id="business_type"
+                                                name="business_type"
                                                 defaultValue=""
+                                                required
                                             >
                                                 <option disabled value="">
                                                     İşletme türünüzü seçin
@@ -331,8 +349,10 @@ const B2BLoginTemplate = () => {
                                         <input
                                             className="w-full px-4 py-3 rounded-lg border border-input-border bg-white text-text-main focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary font-mono tracking-wide placeholder:text-gray-400/70"
                                             id="tax_id"
+                                            name="tax_id"
                                             placeholder="XXXXXXXXXX"
                                             type="text"
+                                            required
                                         />
                                         <p className="text-xs text-text-muted">
                                             Vergi muafiyeti doğrulaması için gereklidir.
@@ -349,16 +369,36 @@ const B2BLoginTemplate = () => {
                                         <input
                                             className="w-full px-4 py-3 rounded-lg border border-input-border bg-white text-text-main focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary placeholder:text-gray-400/70"
                                             id="reg_email"
+                                            name="email"
                                             type="email"
+                                            required
                                         />
                                     </div>
 
-                                    <button
+                                    <div className="flex flex-col gap-1.5">
+                                        <label
+                                            className="text-sm font-semibold text-text-main"
+                                            htmlFor="reg_password"
+                                        >
+                                            Şifre
+                                        </label>
+                                        <input
+                                            className="w-full px-4 py-3 rounded-lg border border-input-border bg-white text-text-main focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary placeholder:text-gray-400/70"
+                                            id="reg_password"
+                                            name="password"
+                                            type="password"
+                                            required
+                                            placeholder="••••••••"
+                                        />
+                                    </div>
+
+                                    <ErrorMessage error={registerMessage} data-testid="register-error-message" />
+
+                                    <SubmitButton
                                         className="mt-4 flex w-full items-center justify-center rounded-lg bg-primary py-3 px-4 text-base font-bold text-white shadow-lg shadow-primary/20 transition-all hover:bg-primary-dark hover:shadow-primary/40 active:scale-[0.98]"
-                                        type="button"
                                     >
                                         Başvuru Yap
-                                    </button>
+                                    </SubmitButton>
                                 </form>
                             </div>
                         )}

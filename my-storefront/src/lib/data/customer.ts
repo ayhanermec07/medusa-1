@@ -104,6 +104,57 @@ export async function signup(_currentState: unknown, formData: FormData) {
   }
 }
 
+export async function signupB2B(_currentState: unknown, formData: FormData) {
+  const password = formData.get("password") as string
+  const customerForm = {
+    email: formData.get("email") as string,
+    first_name: formData.get("first_name") as string,
+    last_name: formData.get("last_name") as string,
+    phone: formData.get("phone") as string,
+    metadata: {
+      company_name: formData.get("company_name"),
+      tax_id: formData.get("tax_id"),
+      business_type: formData.get("business_type"),
+      b2b_status: "pending_approval"
+    }
+  }
+
+  try {
+    const token = await sdk.auth.register("customer", "emailpass", {
+      email: customerForm.email,
+      password: password,
+    })
+
+    await setAuthToken(token as string)
+
+    const headers = {
+      ...(await getAuthHeaders()),
+    }
+
+    const { customer: createdCustomer } = await sdk.store.customer.create(
+      customerForm,
+      {},
+      headers
+    )
+
+    const loginToken = await sdk.auth.login("customer", "emailpass", {
+      email: customerForm.email,
+      password,
+    })
+
+    await setAuthToken(loginToken as string)
+
+    const customerCacheTag = await getCacheTag("customers")
+    revalidateTag(customerCacheTag)
+
+    await transferCart()
+
+    return createdCustomer
+  } catch (error: any) {
+    return error.toString()
+  }
+}
+
 export async function login(_currentState: unknown, formData: FormData) {
   const email = formData.get("email") as string
   const password = formData.get("password") as string

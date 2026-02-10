@@ -30,11 +30,14 @@
         /* Buttons */
         --button-inverted-bg: #f05b05 !important;
         --button-inverted-bg-hover: #d14d04 !important;
-        --button-inverted-fg: #ffffff !important;
+        --button-inverted-fg: #181311 !important;
+        /* Black text on Orange */
 
-        --button-neutral-bg: #231e1a !important;
-        --button-neutral-bg-hover: #3a2e27 !important;
-        --button-neutral-fg: #ffffff !important;
+        --button-neutral-bg: #bba79b !important;
+        /* Lighter background for neutral */
+        --button-neutral-bg-hover: #a8958a !important;
+        --button-neutral-fg: #181311 !important;
+        /* Black text on Neutral */
 
         /* Inputs */
         --ui-bg-field: #231e1a !important;

@@ -4,20 +4,25 @@ import SkeletonProductGrid from "@modules/skeletons/templates/skeleton-product-g
 import RefinementList from "@modules/store/components/refinement-list"
 import { SortOptions } from "@modules/store/components/refinement-list/sort-products"
 import LocalizedClientLink from "@modules/common/components/localized-client-link"
+import { listCategories } from "@lib/data/categories"
 
 import PaginatedProducts from "./paginated-products"
 
-const StoreTemplate = ({
+const StoreTemplate = async ({
   sortBy,
   page,
   countryCode,
+  categoryId,
 }: {
   sortBy?: SortOptions
   page?: string
   countryCode: string
+  categoryId?: string
 }) => {
   const pageNumber = page ? parseInt(page) : 1
   const sort = sortBy || "created_at"
+
+  const categories = await listCategories()
 
   return (
     <div className="bg-background-cream min-h-screen">
@@ -36,30 +41,15 @@ const StoreTemplate = ({
             >
               Tüm Ürünler
             </LocalizedClientLink>
-            <a
-              href="#"
-              className="text-sm font-medium text-stone-500 hover:text-primary transition-colors whitespace-nowrap"
-            >
-              Tane Baharatlar
-            </a>
-            <a
-              href="#"
-              className="text-sm font-medium text-stone-500 hover:text-primary transition-colors whitespace-nowrap"
-            >
-              Toz Baharatlar
-            </a>
-            <a
-              href="#"
-              className="text-sm font-medium text-stone-500 hover:text-primary transition-colors whitespace-nowrap"
-            >
-              Özel Karışımlar
-            </a>
-            <a
-              href="#"
-              className="text-sm font-medium text-stone-500 hover:text-primary transition-colors whitespace-nowrap"
-            >
-              Organik Serisi
-            </a>
+            {categories.map((c) => (
+              <LocalizedClientLink
+                key={c.id}
+                href={`/categories/${c.handle}`}
+                className="text-sm font-medium text-stone-500 hover:text-primary transition-colors whitespace-nowrap"
+              >
+                {c.name}
+              </LocalizedClientLink>
+            ))}
             <div className="ml-auto hidden lg:flex items-center gap-2 text-xs font-medium text-accent whitespace-nowrap">
               <span className="material-symbols-outlined text-sm">
                 verified
@@ -71,7 +61,7 @@ const StoreTemplate = ({
       </div>
 
       <main className="max-w-[1440px] mx-auto w-full px-4 lg:px-8 py-8 flex gap-10">
-        <RefinementList sortBy={sort} />
+        <RefinementList sortBy={sort} categories={categories} />
 
         <section className="flex flex-col flex-1 gap-6">
           {/* Breadcrumb */}
@@ -128,20 +118,8 @@ const StoreTemplate = ({
             </div>
           </div>
 
-          {/* Active Filters */}
-          <div className="flex flex-wrap gap-2">
-            <div className="inline-flex items-center gap-1 px-3 py-1.5 rounded-full bg-accent/10 border border-accent/20 text-accent text-sm font-medium shadow-sm">
-              <span>Stokta Var</span>
-              <button className="ml-1 hover:text-green-700 hover:bg-green-100 rounded-full w-5 h-5 flex items-center justify-center transition-colors">
-                <span className="material-symbols-outlined text-[14px]">
-                  close
-                </span>
-              </button>
-            </div>
-            <button className="text-sm text-stone-500 hover:text-primary underline decoration-dotted ml-2">
-              Tüm filtreleri temizle
-            </button>
-          </div>
+          {/* Active Filters - Mock for now or implement if needed */}
+          {/* <div className="flex flex-wrap gap-2">...</div> */}
 
           {/* Products */}
           <Suspense fallback={<SkeletonProductGrid />}>
@@ -149,6 +127,7 @@ const StoreTemplate = ({
               sortBy={sort}
               page={pageNumber}
               countryCode={countryCode}
+              categoryId={categoryId}
             />
           </Suspense>
         </section>

@@ -125,13 +125,19 @@ export default function ProductActions({
 
     setIsAdding(true)
 
-    await addToCart({
-      variantId: selectedVariant.id,
-      quantity: quantity,
-      countryCode,
-    })
-
-    setIsAdding(false)
+    try {
+      await addToCart({
+        variantId: selectedVariant.id,
+        quantity: quantity,
+        countryCode,
+      })
+      // Optional: Add toast success here if UI library supports it
+      // alert("Ürün sepete eklendi!") 
+    } catch (e: any) {
+      alert("Ürün sepete eklenirken bir hata oluştu: " + e.message)
+    } finally {
+      setIsAdding(false)
+    }
   }
 
   return (

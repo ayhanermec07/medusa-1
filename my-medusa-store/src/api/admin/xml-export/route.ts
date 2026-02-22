@@ -52,7 +52,7 @@ export const GET = async (req: MedusaRequest, res: MedusaResponse) => {
                     xml += `    <barcode>${variant.barcode || ''}</barcode>\n`
 
                     // Stock (Medusa Variant Inventory)
-                    xml += `    <stock>${variant.inventory_quantity || 0}</stock>\n`
+                    xml += `    <stock>${(variant as any).inventory_quantity || 0}</stock>\n`
 
                     // Description (From Parent)
                     xml += `    <description><![CDATA[${product.description || ''}]]></description>\n`

@@ -5,15 +5,19 @@ import { useCallback } from "react"
 
 import SortProducts, { SortOptions } from "./sort-products"
 
+import { HttpTypes } from "@medusajs/types"
+
 type RefinementListProps = {
   sortBy: SortOptions
   search?: boolean
   "data-testid"?: string
+  categories?: HttpTypes.StoreProductCategory[]
 }
 
 const RefinementList = ({
   sortBy,
   "data-testid": dataTestId,
+  categories,
 }: RefinementListProps) => {
   const router = useRouter()
   const pathname = usePathname()
@@ -23,7 +27,6 @@ const RefinementList = ({
     (name: string, value: string) => {
       const params = new URLSearchParams(searchParams)
       params.set(name, value)
-
       return params.toString()
     },
     [searchParams]
@@ -32,6 +35,28 @@ const RefinementList = ({
   const setQueryParams = (name: string, value: string) => {
     const query = createQueryString(name, value)
     router.push(`${pathname}?${query}`)
+  }
+
+  // Handle category change
+  const handleCategoryChange = (e: React.ChangeEvent<HTMLInputElement>, id: string) => {
+    // Currently PaginatedProducts only supports single category filtering via props, 
+    // but we can pass it as query param.
+    // If we want multiple, we need to handle arrays. 
+    // For now, let's assume single selection for simplicity or use the query param approach.
+    // Ideally, we redirect to /categories/[handle] OR we use ?category_id=...
+
+    // If the requirement is "filters", usually ?category_id=... 
+    // Let's toggle it.
+
+    const current = searchParams.get("category_id")
+    if (current === id) {
+      // Remove
+      const params = new URLSearchParams(searchParams)
+      params.delete("category_id")
+      router.push(`${pathname}?${params.toString()}`)
+    } else {
+      setQueryParams("category_id", id)
+    }
   }
 
   return (
@@ -46,7 +71,10 @@ const RefinementList = ({
               </span>
               Filtreler
             </h3>
-            <button className="text-xs text-primary font-medium hover:underline bg-primary/5 px-2 py-1 rounded">
+            <button
+              onClick={() => router.push(pathname)}
+              className="text-xs text-primary font-medium hover:underline bg-primary/5 px-2 py-1 rounded"
+            >
               Temizle
             </button>
           </div>
@@ -59,158 +87,48 @@ const RefinementList = ({
               </span>
               <span className="font-semibold text-sm">Kategori</span>
             </div>
-            <label className="flex items-center gap-3 cursor-pointer group p-1 hover:bg-background-cream rounded transition-colors">
-              <input
-                defaultChecked
-                className="rounded border-stone-300 text-primary focus:ring-primary bg-white"
-                type="checkbox"
-              />
-              <span className="text-sm text-stone-600 group-hover:text-primary transition-colors">
-                Tane Baharatlar (84)
-              </span>
-            </label>
-            <label className="flex items-center gap-3 cursor-pointer group p-1 hover:bg-background-cream rounded transition-colors">
-              <input
-                className="rounded border-stone-300 text-primary focus:ring-primary bg-white"
-                type="checkbox"
-              />
-              <span className="text-sm text-stone-600 group-hover:text-primary transition-colors">
-                Toz Baharatlar (45)
-              </span>
-            </label>
-            <label className="flex items-center gap-3 cursor-pointer group p-1 hover:bg-background-cream rounded transition-colors">
-              <input
-                className="rounded border-stone-300 text-primary focus:ring-primary bg-white"
-                type="checkbox"
-              />
-              <span className="text-sm text-stone-600 group-hover:text-primary transition-colors">
-                Özel Karışımlar (12)
-              </span>
-            </label>
-          </div>
-
-          {/* Form */}
-          <div className="flex flex-col gap-3">
-            <div className="flex items-center gap-2 text-text-main mb-1">
-              <span className="material-symbols-outlined text-[20px] text-secondary">
-                grain
-              </span>
-              <span className="font-semibold text-sm">Form</span>
-            </div>
-            <label className="flex items-center gap-3 cursor-pointer group p-1 hover:bg-background-cream rounded transition-colors">
-              <input
-                className="rounded border-stone-300 text-primary focus:ring-primary bg-white"
-                type="checkbox"
-              />
-              <span className="text-sm text-stone-600 group-hover:text-primary transition-colors">
-                Bütün / Tane
-              </span>
-            </label>
-            <label className="flex items-center gap-3 cursor-pointer group p-1 hover:bg-background-cream rounded transition-colors">
-              <input
-                className="rounded border-stone-300 text-primary focus:ring-primary bg-white"
-                type="checkbox"
-              />
-              <span className="text-sm text-stone-600 group-hover:text-primary transition-colors">
-                Kırılmış / Pul
-              </span>
-            </label>
-            <label className="flex items-center gap-3 cursor-pointer group p-1 hover:bg-background-cream rounded transition-colors">
-              <input
-                className="rounded border-stone-300 text-primary focus:ring-primary bg-white"
-                type="checkbox"
-              />
-              <span className="text-sm text-stone-600 group-hover:text-primary transition-colors">
-                İnce Toz
-              </span>
-            </label>
-          </div>
-
-          {/* Menşei */}
-          <div className="flex flex-col gap-3">
-            <div className="flex items-center gap-2 text-text-main mb-1">
-              <span className="material-symbols-outlined text-[20px] text-accent">
-                public
-              </span>
-              <span className="font-semibold text-sm">Menşei</span>
-            </div>
-            <label className="flex items-center gap-3 cursor-pointer group p-1 hover:bg-background-cream rounded transition-colors">
-              <input
-                className="rounded border-stone-300 text-primary focus:ring-primary bg-white"
-                type="checkbox"
-              />
-              <span className="text-sm text-stone-600 group-hover:text-primary transition-colors">
-                Hindistan
-              </span>
-            </label>
-            <label className="flex items-center gap-3 cursor-pointer group p-1 hover:bg-background-cream rounded transition-colors">
-              <input
-                className="rounded border-stone-300 text-primary focus:ring-primary bg-white"
-                type="checkbox"
-              />
-              <span className="text-sm text-stone-600 group-hover:text-primary transition-colors">
-                Vietnam
-              </span>
-            </label>
-            <label className="flex items-center gap-3 cursor-pointer group p-1 hover:bg-background-cream rounded transition-colors">
-              <input
-                className="rounded border-stone-300 text-primary focus:ring-primary bg-white"
-                type="checkbox"
-              />
-              <span className="text-sm text-stone-600 group-hover:text-primary transition-colors">
-                Türkiye
-              </span>
-            </label>
-          </div>
-
-          {/* Fiyat Aralığı */}
-          <div className="flex flex-col gap-3">
-            <div className="flex items-center gap-2 text-text-main mb-1">
-              <span className="material-symbols-outlined text-[20px] text-secondary">
-                attach_money
-              </span>
-              <span className="font-semibold text-sm">Fiyat Aralığı (kg)</span>
-            </div>
-            <div className="flex items-center gap-2">
-              <input
-                className="w-full rounded-lg border-stone-300 bg-background-cream text-sm py-2 focus:ring-primary focus:border-primary"
-                placeholder="Min"
-                type="number"
-              />
-              <span className="text-stone-500">-</span>
-              <input
-                className="w-full rounded-lg border-stone-300 bg-background-cream text-sm py-2 focus:ring-primary focus:border-primary"
-                placeholder="Maks"
-                type="number"
-              />
-            </div>
-          </div>
-
-          {/* Sertifikalar */}
-          <div className="flex flex-col gap-3">
-            <div className="flex items-center gap-2 text-text-main mb-1">
-              <span className="material-symbols-outlined text-[20px] text-accent">
-                verified
-              </span>
-              <span className="font-semibold text-sm">Sertifikalar</span>
-            </div>
-            <div className="flex flex-col gap-2">
-              <label className="inline-flex items-center cursor-pointer p-1">
-                <input type="checkbox" className="sr-only peer" />
-                <div className="relative w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-accent/30 rounded-full peer peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-accent"></div>
-                <span className="ms-3 text-sm font-medium text-stone-600">
-                  Organik Sertifikalı
+            {categories?.map((c) => (
+              <label key={c.id} className="flex items-center gap-3 cursor-pointer group p-1 hover:bg-background-cream rounded transition-colors">
+                <input
+                  checked={searchParams.get("category_id") === c.id}
+                  onChange={(e) => handleCategoryChange(e, c.id)}
+                  className="rounded border-stone-300 text-primary focus:ring-primary bg-white"
+                  type="checkbox"
+                />
+                <span className="text-sm text-stone-600 group-hover:text-primary transition-colors">
+                  {c.name}
                 </span>
               </label>
-              <label className="inline-flex items-center cursor-pointer p-1">
-                <input type="checkbox" className="sr-only peer" />
-                <div className="relative w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-accent/30 rounded-full peer peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-accent"></div>
-                <span className="ms-3 text-sm font-medium text-stone-600">
-                  GDO&apos;suz
-                </span>
-              </label>
-            </div>
+            ))}
           </div>
+
+          {/* Form - Geliştirme Aşamasında */}
+          {/* 
+          <div className="flex flex-col gap-3">
+            ...
+          </div> 
+          */}
+
+          {/* Menşei - Geliştirme Aşamasında */}
+          {/* 
+          <div className="flex flex-col gap-3">
+             ...
+          </div> 
+          */}
+
+          {/* Fiyat Aralığı - Geliştirme Aşamasında */}
+          {/* 
+          <div className="flex flex-col gap-3">
+             ...
+          </div> 
+          */}
+
+          {/* Sertifikalar - Geliştirme Aşamasında */}
+          {/* 
+          <div className="flex flex-col gap-3">
+             ...
+          </div> 
+          */}
 
           {/* Sort - Desktop */}
           <div className="pt-4 border-t border-stone-200">

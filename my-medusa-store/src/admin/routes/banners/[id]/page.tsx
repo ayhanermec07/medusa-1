@@ -158,8 +158,4 @@ const UpdateBannerPage = () => {
     )
 }
 
-export const config = defineRouteConfig({
-    label: "Banner Düzenle",
-})
-
 export default UpdateBannerPage

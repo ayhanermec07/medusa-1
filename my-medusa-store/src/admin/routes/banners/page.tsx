@@ -1,6 +1,5 @@
-import { Container, Heading, Table, Button, StatusBadge, Toast } from "@medusajs/ui"
+import { Container, Heading, Table, Button, StatusBadge } from "@medusajs/ui"
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query"
-import { sdk } from "../../lib/sdk" // Assuming sdk is available or use fetch
 import { Link } from "react-router-dom"
 import { defineRouteConfig } from "@medusajs/admin-sdk"
 import { PencilSquare, Trash } from "@medusajs/icons"
@@ -40,7 +39,6 @@ const BannersPage = () => {
         },
         onSuccess: () => {
             queryClient.invalidateQueries({ queryKey: ["banners"] })
-            // Toast success
         }
     })
 
@@ -104,7 +102,7 @@ const BannersPage = () => {
                     ))}
                     {data?.banners?.length === 0 && (
                         <Table.Row>
-                            <Table.Cell colSpan={5} className="text-center py-4">
+                            <Table.Cell className="text-center py-4">
                                 Henüz banner bulunmuyor.
                             </Table.Cell>
                         </Table.Row>
@@ -117,7 +115,6 @@ const BannersPage = () => {
 
 export const config = defineRouteConfig({
     label: "Bannerlar",
-    icon: "Photo", // if available, or omit
 })
 
 export default BannersPage

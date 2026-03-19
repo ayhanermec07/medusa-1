@@ -372,7 +372,6 @@ const CustomDashboardPage = () => {
 
 export const config = defineRouteConfig({
     label: "Custom Dashboard",
-    icon: "dashboard",
 })
 
 export default CustomDashboardPage

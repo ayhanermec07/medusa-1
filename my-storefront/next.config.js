@@ -31,6 +31,18 @@ const nextConfig = {
         hostname: "localhost",
       },
       {
+        protocol: "http",
+        hostname: "127.0.0.1",
+      },
+      {
+        protocol: "http",
+        hostname: "panel.efsanebaharat.com",
+      },
+      {
+        protocol: "https",
+        hostname: "panel.efsanebaharat.com",
+      },
+      {
         protocol: "https",
         hostname: "medusa-public-images.s3.eu-west-1.amazonaws.com",
       },
@@ -44,12 +56,12 @@ const nextConfig = {
       },
       ...(S3_HOSTNAME && S3_PATHNAME
         ? [
-            {
-              protocol: "https",
-              hostname: S3_HOSTNAME,
-              pathname: S3_PATHNAME,
-            },
-          ]
+          {
+            protocol: "https",
+            hostname: S3_HOSTNAME,
+            pathname: S3_PATHNAME,
+          },
+        ]
         : []),
     ],
   },

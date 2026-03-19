@@ -1,0 +1,5 @@
+cd my-storefront
+npm run dev
+
+cd my-medusa-store
+npm run dev

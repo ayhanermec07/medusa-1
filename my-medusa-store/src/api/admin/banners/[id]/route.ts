@@ -1,4 +1,5 @@
 import { MedusaRequest, MedusaResponse } from "@medusajs/framework/http"
+import { ContainerRegistrationKeys } from "@medusajs/framework/utils"
 import { z } from "zod"
 
 const updateBannerSchema = z.object({
@@ -11,23 +12,58 @@ const updateBannerSchema = z.object({
 })
 
 export const GET = async (req: MedusaRequest, res: MedusaResponse) => {
-  const { id } = req.params
-  const bannerService = req.scope.resolve("banner") as any
-  const banner = await bannerService.retrieveBanner(id)
-  res.json({ banner })
+  try {
+    const { id } = req.params
+    const pgConnection = req.scope.resolve(ContainerRegistrationKeys.PG_CONNECTION) as any
+    const result = await pgConnection.raw("SELECT * FROM banner WHERE id = ? AND deleted_at IS NULL", [id])
+    const banner = (result.rows || result[0] || [])[0]
+    if (!banner) {
+      return res.status(404).json({ message: "Banner bulunamadı" })
+    }
+    res.json({ banner })
+  } catch (err: any) {
+    res.status(500).json({ error: err.message })
+  }
 }
 
 export const PUT = async (req: MedusaRequest, res: MedusaResponse) => {
-  const { id } = req.params
-  const bannerService = req.scope.resolve("banner") as any
-  const validated = updateBannerSchema.parse(req.body)
-  const banner = await bannerService.updateBanners(id, validated)
-  res.json({ banner })
+  try {
+    const { id } = req.params
+    const validated = updateBannerSchema.parse(req.body)
+    const pgConnection = req.scope.resolve(ContainerRegistrationKeys.PG_CONNECTION) as any
+    
+    // Dinamik güncelleme sorgusu oluştur
+    const updates: string[] = []
+    const values: any[] = []
+    Object.entries(validated).forEach(([key, value]) => {
+      if (value !== undefined) {
+        updates.push(`"${key}" = ?`)
+        values.push(value)
+      }
+    })
+    
+    if (updates.length > 0) {
+      updates.push('"updated_at" = NOW()')
+      values.push(id)
+      await pgConnection.raw(`UPDATE banner SET ${updates.join(", ")} WHERE id = ?`, values)
+    }
+    
+    const result = await pgConnection.raw("SELECT * FROM banner WHERE id = ?", [id])
+    const banner = (result.rows || result[0] || [])[0]
+    res.json({ banner })
+  } catch (err: any) {
+    res.status(500).json({ error: err.message })
+  }
 }
 
 export const DELETE = async (req: MedusaRequest, res: MedusaResponse) => {
-  const { id } = req.params
-  const bannerService = req.scope.resolve("banner") as any
-  await bannerService.deleteBanners(id)
-  res.json({ success: true })
+  try {
+    const { id } = req.params
+    const pgConnection = req.scope.resolve(ContainerRegistrationKeys.PG_CONNECTION) as any
+    // Soft delete
+    await pgConnection.raw('UPDATE banner SET "deleted_at" = NOW() WHERE id = ?', [id])
+    res.json({ success: true })
+  } catch (err: any) {
+    res.status(500).json({ error: err.message })
+  }
 }

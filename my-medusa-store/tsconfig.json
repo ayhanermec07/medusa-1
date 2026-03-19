@@ -8,7 +8,6 @@
       "DOM"
     ],
     "outDir": "dist",
-    "rootDir": "src",
     "sourceMap": true,
     "strict": false,
     "esModuleInterop": true,

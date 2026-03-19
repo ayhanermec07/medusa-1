@@ -2,7 +2,7 @@ import { Metadata } from "next"
 
 import FeaturedProducts from "@modules/home/components/featured-products"
 import Hero from "@modules/home/components/hero"
-import Advantages from "@modules/home/components/advantages"
+import CampaignBanner from "@modules/home/components/campaign-banner"
 import FeaturedCategories from "@modules/home/components/featured-categories"
 import { listCollections } from "@lib/data/collections"
 import { getRegion } from "@lib/data/regions"
@@ -33,7 +33,7 @@ export default async function Home(props: {
   return (
     <>
       <Hero />
-      <Advantages />
+      <CampaignBanner />
       <FeaturedCategories />
       <div className="w-full flex justify-center px-4 md:px-10 py-16 lg:py-24 bg-white">
         <div className="w-full max-w-[1340px]">

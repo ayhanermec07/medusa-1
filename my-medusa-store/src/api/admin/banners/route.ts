@@ -1,4 +1,5 @@
 import { MedusaRequest, MedusaResponse } from "@medusajs/framework/http"
+import { ContainerRegistrationKeys } from "@medusajs/framework/utils"
 import { z } from "zod"
 
 const createBannerSchema = z.object({
@@ -11,14 +12,36 @@ const createBannerSchema = z.object({
 })
 
 export const GET = async (req: MedusaRequest, res: MedusaResponse) => {
-  const bannerService = req.scope.resolve("banner") as any
-  const [banners, count] = await bannerService.listAndCountBanners(req.query)
-  res.json({ banners, count })
+  try {
+    const pgConnection = req.scope.resolve(ContainerRegistrationKeys.PG_CONNECTION) as any
+    const result = await pgConnection.raw(
+      "SELECT id, title, image_url, link_type, link_id, external_link, is_active, created_at FROM banner WHERE deleted_at IS NULL ORDER BY created_at DESC"
+    )
+    const banners = result.rows || result[0] || []
+    res.json({ banners, count: banners.length })
+  } catch (err: any) {
+    console.error("Admin banner GET error:", err.message)
+    res.json({ banners: [], count: 0 })
+  }
 }
 
 export const POST = async (req: MedusaRequest, res: MedusaResponse) => {
-  const validated = createBannerSchema.parse(req.body)
-  const bannerService = req.scope.resolve("banner") as any
-  const banner = await bannerService.createBanners(validated)
-  res.json({ banner })
+  try {
+    const validated = createBannerSchema.parse(req.body)
+    const pgConnection = req.scope.resolve(ContainerRegistrationKeys.PG_CONNECTION) as any
+    
+    const id = `banner_${Date.now()}`
+    await pgConnection.raw(
+      `INSERT INTO banner (id, title, image_url, link_type, link_id, external_link, is_active, created_at, updated_at)
+       VALUES (?, ?, ?, ?, ?, ?, ?, NOW(), NOW())`,
+      [id, validated.title, validated.image_url, validated.link_type, validated.link_id || null, validated.external_link || null, validated.is_active !== false]
+    )
+    
+    const result = await pgConnection.raw("SELECT * FROM banner WHERE id = ?", [id])
+    const banner = (result.rows || result[0] || [])[0]
+    res.json({ banner })
+  } catch (err: any) {
+    console.error("Admin banner POST error:", err.message)
+    res.status(500).json({ error: err.message })
+  }
 }
